@@ -40,6 +40,8 @@
             50% { transform: scale(1.1); }
             100% { transform: scale(1); }
         }
+        .cursor-wait { cursor: wait; }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
 <body>
@@ -495,68 +497,111 @@
             );
         };
 
-        const ContactPage = ({ onBack }) => (
-            <div className="max-w-2xl mx-auto px-4 py-8">
-                <button onClick={onBack} className="flex items-center gap-2 text-gray-600 hover:text-black mb-6"><ArrowLeftIcon className="h-5 w-5" /> Retour</button>
-                <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6">Contactez-nous</h2>
-                    <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); alert("Message envoyé !"); onBack(); }}>
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">Votre Email</label>
-                            <input type="email" required className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none" />
+        const ContactPage = ({ onBack }) => {
+            const [submitted, setSubmitted] = React.useState(false);
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                setSubmitted(true);
+            };
+
+            return (
+                <div className="max-w-2xl mx-auto px-4 py-8">
+                    <button onClick={onBack} className="flex items-center gap-2 text-gray-600 hover:text-black mb-6"><ArrowLeftIcon className="h-5 w-5" /> Retour</button>
+                    <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
+                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Contactez-nous</h2>
+                        
+                        {!submitted ? (
+                            <form className="space-y-4" onSubmit={handleSubmit}>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Votre Email</label>
+                                    <input type="email" required className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Sujet</label>
+                                    <select className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none">
+                                        <option>Problème technique</option>
+                                        <option>Question sur mon compte</option>
+                                        <option>Partenariat</option>
+                                        <option>Autre</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Message</label>
+                                    <textarea rows="4" required className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none"></textarea>
+                                </div>
+                                <button type="submit" className="w-full bg-lbc text-white font-bold py-3 rounded-xl hover:bg-lbc-hover transition">Envoyer le message</button>
+                            </form>
+                        ) : (
+                            <div className="text-center py-8">
+                                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <CheckIcon className="h-8 w-8 text-green-600" />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-2">Message envoyé !</h3>
+                                <p className="text-gray-600">Merci de nous avoir contactés. Notre équipe vous répondra sous 24h.</p>
+                                <button onClick={onBack} className="mt-6 text-lbc font-bold hover:underline">Retourner à l'accueil</button>
+                            </div>
+                        )}
+
+                        <div className="mt-8 pt-6 border-t border-gray-100 text-center">
+                            <p className="text-sm text-gray-500">Ou écrivez-nous directement sur WhatsApp :</p>
+                            <button className="text-green-600 font-bold mt-2 hover:underline">+241 00 00 00 00</button>
                         </div>
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">Sujet</label>
-                            <select className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none">
-                                <option>Problème technique</option>
-                                <option>Question sur mon compte</option>
-                                <option>Partenariat</option>
-                                <option>Autre</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">Message</label>
-                            <textarea rows="4" required className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none"></textarea>
-                        </div>
-                        <button type="submit" className="w-full bg-lbc text-white font-bold py-3 rounded-xl hover:bg-lbc-hover transition">Envoyer le message</button>
-                    </form>
-                    <div className="mt-8 pt-6 border-t border-gray-100 text-center">
-                        <p className="text-sm text-gray-500">Ou écrivez-nous directement sur WhatsApp :</p>
-                        <button className="text-green-600 font-bold mt-2 hover:underline">+241 00 00 00 00</button>
                     </div>
                 </div>
-            </div>
-        );
+            );
+        };
 
-        const ReportPage = ({ onBack }) => (
-            <div className="max-w-2xl mx-auto px-4 py-8">
-                <button onClick={onBack} className="flex items-center gap-2 text-gray-600 hover:text-black mb-6"><ArrowLeftIcon className="h-5 w-5" /> Retour</button>
-                <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
-                    <h2 className="text-2xl font-bold text-red-600 mb-6 flex items-center gap-2"><ShieldIcon className="h-6 w-6" /> Signaler une annonce ou un utilisateur</h2>
-                    <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); alert("Signalement enregistré. Nous allons enquêter."); onBack(); }}>
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">Lien de l'annonce ou Nom de l'utilisateur</label>
-                            <input type="text" placeholder="Ex: https://bonwaz.com/annonce/123" required className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">Motif du signalement</label>
-                            <select className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none">
-                                <option>Arnaque / Tentative de fraude</option>
-                                <option>Article interdit</option>
-                                <option>Contenu inapproprié / Insultes</option>
-                                <option>Contrefaçon</option>
-                                <option>Autre</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">Détails (Preuves, explications)</label>
-                            <textarea rows="4" placeholder="Expliquez-nous le problème..." required className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none"></textarea>
-                        </div>
-                        <button type="submit" className="w-full bg-red-600 text-white font-bold py-3 rounded-xl hover:bg-red-700 transition">Envoyer le signalement</button>
-                    </form>
+        const ReportPage = ({ onBack }) => {
+            const [submitted, setSubmitted] = React.useState(false);
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                setSubmitted(true);
+            };
+
+            return (
+                <div className="max-w-2xl mx-auto px-4 py-8">
+                    <button onClick={onBack} className="flex items-center gap-2 text-gray-600 hover:text-black mb-6"><ArrowLeftIcon className="h-5 w-5" /> Retour</button>
+                    <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
+                        <h2 className="text-2xl font-bold text-red-600 mb-6 flex items-center gap-2"><ShieldIcon className="h-6 w-6" /> Signaler une annonce ou un utilisateur</h2>
+                        
+                        {!submitted ? (
+                            <form className="space-y-4" onSubmit={handleSubmit}>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Lien de l'annonce ou Nom de l'utilisateur</label>
+                                    <input type="text" placeholder="Ex: https://bonwaz.com/annonce/123" required className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Motif du signalement</label>
+                                    <select className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none">
+                                        <option>Arnaque / Tentative de fraude</option>
+                                        <option>Article interdit</option>
+                                        <option>Contenu inapproprié / Insultes</option>
+                                        <option>Contrefaçon</option>
+                                        <option>Autre</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Détails (Preuves, explications)</label>
+                                    <textarea rows="4" placeholder="Expliquez-nous le problème..." required className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none"></textarea>
+                                </div>
+                                <button type="submit" className="w-full bg-red-600 text-white font-bold py-3 rounded-xl hover:bg-red-700 transition">Envoyer le signalement</button>
+                            </form>
+                        ) : (
+                            <div className="text-center py-8">
+                                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <CheckIcon className="h-8 w-8 text-red-600" />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-2">Signalement reçu</h3>
+                                <p className="text-gray-600">Nous prenons la sécurité très au sérieux. Nos modérateurs vont analyser ce signalement dans les plus brefs délais.</p>
+                                <button onClick={onBack} className="mt-6 text-gray-600 font-bold hover:underline">Retourner à l'accueil</button>
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
-        );
+            );
+        };
 
         const TermsPage = ({ onBack }) => (
             <div className="max-w-4xl mx-auto px-4 py-8">
@@ -1519,7 +1564,7 @@
             </div>
         );
 
-        const MainContent = ({ listings, onViewProduct, onStartChat, favorites, onToggleFavorite, onLoadMore }) => (
+        const MainContent = ({ listings, onViewProduct, onStartChat, favorites, onToggleFavorite, onLoadMore, isLoadingMore }) => (
             <main className="max-w-[1064px] mx-auto px-4 py-8 pb-24">
                 <div className="flex justify-between items-end mb-6"><h2 className="text-xl font-bold text-gray-900">Annonces récentes</h2></div>
                 <div className="flex flex-col">
@@ -1536,7 +1581,23 @@
                 </div>
                 {listings.length > 0 && (
                     <div className="flex justify-center mt-8">
-                        <button onClick={onLoadMore} className="bg-white border border-gray-300 text-gray-800 font-bold py-2 px-6 rounded-xl hover:bg-gray-50 transition shadow-sm">Voir plus d'annonces</button>
+                        <button 
+                            onClick={onLoadMore} 
+                            disabled={isLoadingMore}
+                            className={`bg-white border border-gray-300 text-gray-800 font-bold py-3 px-8 rounded-xl hover:bg-gray-50 transition shadow-sm flex items-center justify-center gap-2 ${isLoadingMore ? 'opacity-70 cursor-wait' : ''}`}
+                        >
+                            {isLoadingMore ? (
+                                <>
+                                    <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Chargement...
+                                </>
+                            ) : (
+                                "Voir plus d'annonces"
+                            )}
+                        </button>
                     </div>
                 )}
             </main>
@@ -1660,6 +1721,7 @@
             const [favorites, setFavorites] = React.useState([]); 
             const [conversations, setConversations] = React.useState([]);
             const [redirectAfterLogin, setRedirectAfterLogin] = React.useState(null); 
+            const [isLoadingMore, setIsLoadingMore] = React.useState(false); // Ajout de l'état de chargement
             
             // Search State
             const [filters, setFilters] = React.useState({ query: "", location: "", category: "" });
@@ -1742,7 +1804,18 @@
             };
 
             const handleLoadMore = () => {
-                alert("Fonctionnalité 'Charger plus' simulée !");
+                setIsLoadingMore(true);
+                setTimeout(() => {
+                    // Simuler le chargement de nouvelles annonces (en dupliquant les existantes avec de nouveaux IDs)
+                    const moreItems = INITIAL_LISTINGS.map((item, index) => ({
+                        ...item,
+                        id: `more-${Date.now()}-${index}`,
+                        title: `${item.title} (Occasion)`,
+                        date: "Il y a 2 jours"
+                    }));
+                    setListings(prev => [...prev, ...moreItems]);
+                    setIsLoadingMore(false);
+                }, 1500);
             };
 
             const handleToggleFavorite = (id) => {
@@ -1807,7 +1880,7 @@
                     case 'report': return <ReportPage onBack={goHome} />;
                     case 'terms': return <TermsPage onBack={goHome} />;
 
-                    case 'home': default: return <div><TrustBanner /><SearchSection onSearch={handleSearch} onCategoryClick={handleCategoryClick} selectedCategory={filters.category} /><MainContent listings={filteredListings} onViewProduct={handleViewProduct} onStartChat={handleStartChat} favorites={favorites} onToggleFavorite={handleToggleFavorite} onLoadMore={handleLoadMore} /><Footer onNavigate={handleFooterNavigate} /></div>;
+                    case 'home': default: return <div><TrustBanner /><SearchSection onSearch={handleSearch} onCategoryClick={handleCategoryClick} selectedCategory={filters.category} /><MainContent listings={filteredListings} onViewProduct={handleViewProduct} onStartChat={handleStartChat} favorites={favorites} onToggleFavorite={handleToggleFavorite} onLoadMore={handleLoadMore} isLoadingMore={isLoadingMore} /><Footer onNavigate={handleFooterNavigate} /></div>;
                 }
             };
 
