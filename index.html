@@ -222,7 +222,7 @@
                         
                         {/* Logo Area */}
                         <div className="flex items-center gap-6">
-                             <div onClick={onGoHome}>
+                             <div onClick={onGoHome} className="cursor-pointer">
                                 <Logo />
                              </div>
                             
@@ -237,7 +237,13 @@
                         </div>
 
                         {/* Right Actions */}
-                        <div className="flex items-center gap-6 text-sm text-gray-700 font-semibold">
+                        <div className="flex items-center gap-2 md:gap-6 text-sm text-gray-700 font-semibold">
+                             {/* Mobile Alerts Icon */}
+                             <button onClick={onAlerts} className="md:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-full">
+                                <BellIcon className="h-6 w-6" />
+                            </button>
+
+                             {/* Desktop Actions */}
                              <button onClick={onAlerts} className="hidden md:flex flex-col items-center gap-1 hover:text-black">
                                 <BellIcon className="h-6 w-6" />
                                 <span className="text-xs font-normal">Alertes</span>
@@ -252,7 +258,7 @@
                             </button>
                             
                             {user ? (
-                                <button onClick={onProfile} className="flex items-center gap-2 hover:text-black cursor-pointer border-l pl-6 ml-2 border-gray-200">
+                                <button onClick={onProfile} className="hidden md:flex items-center gap-2 hover:text-black cursor-pointer border-l pl-6 ml-2 border-gray-200">
                                     <div className="w-8 h-8 rounded-full overflow-hidden border border-blue-200 flex-shrink-0">
                                         {user.avatar ? (
                                             <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
@@ -262,17 +268,64 @@
                                             </div>
                                         )}
                                     </div>
-                                    <span className="text-xs font-normal hidden md:block max-w-[100px] truncate">{user.name}</span>
+                                    <span className="text-xs font-normal max-w-[100px] truncate">{user.name}</span>
                                 </button>
                             ) : (
-                                <button onClick={onLogin} className="flex flex-col items-center gap-1 hover:text-black cursor-pointer border-l pl-6 ml-2 border-gray-200">
+                                <button onClick={onLogin} className="hidden md:flex flex-col items-center gap-1 hover:text-black cursor-pointer border-l pl-6 ml-2 border-gray-200">
                                     <UserIcon className="h-6 w-6" />
-                                    <span className="text-xs font-normal hidden md:block">Connexion</span>
+                                    <span className="text-xs font-normal">Connexion</span>
                                 </button>
                             )}
                         </div>
                     </div>
                 </header>
+            );
+        };
+
+        const MobileNavBar = ({ currentView, onNavigate, userAvatar }) => {
+            const navItems = [
+                { id: 'home', label: 'Recherche', icon: SearchIcon },
+                { id: 'favorites', label: 'Favoris', icon: HeartIcon },
+                { id: 'create', label: 'Déposer', icon: PlusIcon, isSpecial: true },
+                { id: 'inbox', label: 'Messages', icon: MessageIcon },
+                { id: 'profile', label: 'Compte', icon: UserIcon },
+            ];
+
+            return (
+                <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 pb-safe pt-2 px-2 flex justify-between items-end z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+                    {navItems.map(item => (
+                        <button
+                            key={item.id}
+                            onClick={() => onNavigate(item.id)}
+                            className={`flex flex-col items-center gap-1 flex-1 p-2 active:scale-95 transition ${item.isSpecial ? '-mt-8' : ''}`}
+                        >
+                            {item.isSpecial ? (
+                                <div className="bg-lbc text-white p-3.5 rounded-2xl shadow-lg border-4 border-[#f4f6f7] transform hover:-translate-y-1 transition">
+                                    <item.icon className="h-7 w-7" />
+                                </div>
+                            ) : (
+                                <>
+                                    {item.id === 'profile' && userAvatar ? (
+                                        <div className={`w-6 h-6 rounded-full overflow-hidden border ${currentView === 'profile' ? 'border-lbc ring-1 ring-lbc' : 'border-transparent'}`}>
+                                             {typeof userAvatar === 'string' ? (
+                                                <img src={userAvatar} className="w-full h-full object-cover" />
+                                             ) : (
+                                                <div className="w-full h-full bg-blue-100 flex items-center justify-center text-[10px] font-bold text-lbc">
+                                                    {userAvatar}
+                                                </div>
+                                             )}
+                                        </div>
+                                    ) : (
+                                        <item.icon className={`h-6 w-6 ${currentView === item.id || (currentView === 'detail' && item.id === 'home') ? 'text-lbc fill-current' : 'text-gray-400'}`} filled={currentView === item.id} />
+                                    )}
+                                </>
+                            )}
+                            <span className={`text-[10px] font-medium ${currentView === item.id ? 'text-lbc' : 'text-gray-500'}`}>
+                                {item.label}
+                            </span>
+                        </button>
+                    ))}
+                </div>
             );
         };
 
@@ -1614,6 +1667,16 @@
                 setView('create'); 
             };
 
+            const handleMobileNav = (target) => {
+                switch(target) {
+                    case 'home': goHome(); break;
+                    case 'favorites': goToFavorites(); break;
+                    case 'create': goToCreateListing(); break;
+                    case 'inbox': goToInbox(); break;
+                    case 'profile': goToProfile(); break;
+                }
+            };
+
             const handleLogout = () => { setUser(null); goHome(); };
 
             const handleLoginSuccess = (userData) => { 
@@ -1736,14 +1799,13 @@
                     )}
                     {renderView()}
                     
-                    {/* Floating Action Button for Mobile Create Listing */}
-                    {view === 'home' && (
-                        <button 
-                            onClick={goToCreateListing}
-                            className="md:hidden fixed bottom-6 right-6 bg-lbc text-white p-4 rounded-full shadow-lg z-50 fab-animation hover:bg-lbc-hover transition"
-                        >
-                            <PlusIcon className="h-8 w-8" />
-                        </button>
+                    {/* New Bottom Navigation for Mobile */}
+                    {view !== 'login' && view !== 'chat' && view !== 'signup' && (
+                        <MobileNavBar 
+                            currentView={view} 
+                            onNavigate={handleMobileNav} 
+                            userAvatar={user ? (user.avatar || user.name.charAt(0)) : null} 
+                        />
                     )}
                 </div>
             );
